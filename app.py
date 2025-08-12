@@ -3,6 +3,7 @@ import fitz  # PyMuPDF
 import docx
 import email
 from bs4 import BeautifulSoup
+import chardet
 
 st.set_page_config(page_title="ClauseMind AI 🔍", layout="centered")
 
@@ -11,16 +12,16 @@ st.markdown("Welcome to **ClauseMind AI** – An LLM-Powered Document Query & De
 
 st.header("Upload Your Document")
 uploaded_file = st.file_uploader(
-    "Choose a PDF, DOCX, or email file", 
-    type=["pdf", "docx", "eml"], 
-    help="Limit 200MB per file • PDF, DOCX, EML"
+    "Choose a PDF, DOCX, Email, or Text/CSV file", 
+    type=["pdf", "docx", "eml", "txt", "csv"],
+    help="Limit 200MB per file • PDF, DOCX, EML, TXT, CSV"
 )
 
 def parse_pdf(file):
     doc = fitz.open(stream=file.read(), filetype="pdf")
     text = ""
-    for page in doc:
-        text += page.get_text()
+    for page_num, page in enumerate(doc, start=1):
+        text += f"\n[Page {page_num}]\n" + page.get_text()
     return text
 
 def parse_docx(file):
@@ -32,12 +33,22 @@ def parse_eml(file):
     body = ""
     for part in msg.walk():
         if part.get_content_type() == "text/plain":
-            body += part.get_payload(decode=True).decode()
+            body += part.get_payload(decode=True).decode(errors="ignore")
         elif part.get_content_type() == "text/html":
-            html = part.get_payload(decode=True).decode()
+            html = part.get_payload(decode=True).decode(errors="ignore")
             soup = BeautifulSoup(html, "html.parser")
             body += soup.get_text()
     return body
+
+def parse_txt(file):
+    raw = file.read()
+    encoding = chardet.detect(raw)["encoding"] or "utf-8"
+    return raw.decode(encoding, errors="ignore")
+
+def parse_csv(file):
+    import pandas as pd
+    df = pd.read_csv(file)
+    return df.to_string(index=False)
 
 if uploaded_file:
     st.success("File uploaded successfully!")
@@ -54,6 +65,10 @@ if uploaded_file:
             content = parse_docx(uploaded_file)
         elif uploaded_file.type == "message/rfc822":
             content = parse_eml(uploaded_file)
+        elif uploaded_file.type in ["text/plain", "application/txt"]:
+            content = parse_txt(uploaded_file)
+        elif uploaded_file.type in ["text/csv", "application/vnd.ms-excel"]:
+            content = parse_csv(uploaded_file)
         else:
             st.error("Unsupported file type.")
             content = None
@@ -61,6 +76,11 @@ if uploaded_file:
         if content:
             st.subheader("Parsed Text Content:")
             st.text_area("Document Text", content, height=300)
+
+            # Placeholder for sending parsed text to embedding/vector DB pipeline
+            if st.button("Process & Index Document"):
+                st.info("Document sent for processing (embedding, vector storage, and indexing)...")
+                # TODO: Integrate with backend ingestion API
 
     except Exception as e:
         st.error(f"Failed to parse the document: {e}")
