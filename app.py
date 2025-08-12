@@ -4,6 +4,7 @@ import docx
 import email
 from bs4 import BeautifulSoup
 import chardet
+from backend import process_and_index
 
 st.set_page_config(page_title="ClauseMind AI 🔍", layout="centered")
 
@@ -77,10 +78,10 @@ if uploaded_file:
             st.subheader("Parsed Text Content:")
             st.text_area("Document Text", content, height=300)
 
-            # Placeholder for sending parsed text to embedding/vector DB pipeline
             if st.button("Process & Index Document"):
-                st.info("Document sent for processing (embedding, vector storage, and indexing)...")
-                # TODO: Integrate with backend ingestion API
+                with st.spinner("Processing and indexing document..."):
+                    result = process_and_index(content, uploaded_file.name)
+                    st.success(f"Document indexed successfully with {result['chunks_indexed']} chunks.")
 
     except Exception as e:
         st.error(f"Failed to parse the document: {e}")
