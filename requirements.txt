@@ -1,9 +1,4 @@
 streamlit
-pymupdf
-python-docx
-beautifulsoup4
-chardet
-pandas
 openai
-pinecone>=7.4.0
-python-dotenv
+pinecone-client
+flash
