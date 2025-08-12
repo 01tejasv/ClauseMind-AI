@@ -1,6 +1,6 @@
 import os
 import openai
-from pinecone import Client
+from pinecone
 from uuid import uuid4
 
 # Set OpenAI API key from environment variable (or hardcode if needed)
