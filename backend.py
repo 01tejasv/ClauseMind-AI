@@ -1,27 +1,26 @@
 import os
 import openai
-import pinecone
+from pinecone import Client
 from uuid import uuid4
 
-# OpenAI API key - keep as environment variable or set here
 openai.api_key = os.getenv("OPENAI_API_KEY")
-# openai.api_key = "your-openai-api-key"  # optional hardcode
-
-# Your Pinecone API key and environment
 pinecone_api_key = "pcsk_4FYWkq_2v8TPeMYDjuU2Y3mUXiL22bRjEG6BkFGTHu6wcxMn8QVG4y6erdzVaygE14zr78"
 pinecone_env = "aped-4627-b74a"
 
-# Initialize Pinecone client
-pinecone.init(api_key=pinecone_api_key, environment=pinecone_env)
+# Create Pinecone client
+pc = Client(api_key=pinecone_api_key, environment=pinecone_env)
 
 index_name = "clause-mind-index"
 
-# Create index if it doesn't exist
-if index_name not in pinecone.list_indexes():
-    pinecone.create_index(index_name, dimension=1536)
+# List existing indexes
+indexes = pc.list_indexes()
 
-# Connect to the index
-index = pinecone.Index(index_name)
+# Create index if not exists
+if index_name not in indexes:
+    pc.create_index(name=index_name, dimension=1536)
+
+# Connect to index
+index = pc.index(index_name)
 
 def process_and_index(content: str, filename: str):
     chunks = [content[i:i+1000] for i in range(0, len(content), 1000)]
@@ -31,5 +30,5 @@ def process_and_index(content: str, filename: str):
             input=chunk
         )["data"][0]["embedding"]
         meta = {"filename": filename, "chunk": chunk}
-        index.upsert([(str(uuid4()), embedding, meta)])
+        index.upsert(vectors=[(str(uuid4()), embedding, meta)])
     return {"status": "success", "chunks_indexed": len(chunks)}
