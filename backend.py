@@ -1,6 +1,6 @@
 import os
 import openai
-from pinecone import Pinecone  # Import the Pinecone class
+from pinecone import Pinecone  # Use Pinecone class instead of top-level pinecone
 from uuid import uuid4
 
 # Load environment variables for API keys
