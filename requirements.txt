@@ -1,3 +1,9 @@
 streamlit
 openai
-pinecone==2.3.1
+pinecone-client==6.0.0
+python-dotenv
+pymupdf
+python-docx
+beautifulsoup4
+chardet
+pandas
