@@ -3,9 +3,14 @@ import openai
 from pinecone import Pinecone
 from uuid import uuid4
 
+# Keep OpenAI key from environment or set directly here if you want
 openai.api_key = os.getenv("OPENAI_API_KEY")
-pinecone_api_key = os.getenv("PINECONE_API_KEY")
-pinecone_env = os.getenv("PINECONE_ENV")
+# Or set directly like:
+# openai.api_key = "your-openai-api-key"
+
+# Use your actual Pinecone API key and environment here
+pinecone_api_key = "pcsk_4FYWkq_2v8TPeMYDjuU2Y3mUXiL22bRjEG6BkFGTHu6wcxMn8QVG4y6erdzVaygE14zr78"
+pinecone_env = "aped-4627-b74a"
 
 pc = Pinecone(
     api_key=pinecone_api_key,
@@ -14,6 +19,7 @@ pc = Pinecone(
 
 index_name = "clause-mind-index"
 
+# Check if index exists, create if not
 if index_name not in pc.list_indexes().names():
     pc.create_index(index_name, dimension=1536)
 
