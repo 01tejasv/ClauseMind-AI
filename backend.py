@@ -1,29 +1,27 @@
 import os
 import openai
-from pinecone import Pinecone
+import pinecone
 from uuid import uuid4
 
-# Keep OpenAI key from environment or set directly here if you want
+# OpenAI API key - keep as environment variable or set here
 openai.api_key = os.getenv("OPENAI_API_KEY")
-# Or set directly like:
-# openai.api_key = "your-openai-api-key"
+# openai.api_key = "your-openai-api-key"  # optional hardcode
 
-# Use your actual Pinecone API key and environment here
+# Your Pinecone API key and environment
 pinecone_api_key = "pcsk_4FYWkq_2v8TPeMYDjuU2Y3mUXiL22bRjEG6BkFGTHu6wcxMn8QVG4y6erdzVaygE14zr78"
 pinecone_env = "aped-4627-b74a"
 
-pc = Pinecone(
-    api_key=pinecone_api_key,
-    environment=pinecone_env
-)
+# Initialize Pinecone client
+pinecone.init(api_key=pinecone_api_key, environment=pinecone_env)
 
 index_name = "clause-mind-index"
 
-# Check if index exists, create if not
-if index_name not in pc.list_indexes().names():
-    pc.create_index(index_name, dimension=1536)
+# Create index if it doesn't exist
+if index_name not in pinecone.list_indexes():
+    pinecone.create_index(index_name, dimension=1536)
 
-index = pc.index(index_name)
+# Connect to the index
+index = pinecone.Index(index_name)
 
 def process_and_index(content: str, filename: str):
     chunks = [content[i:i+1000] for i in range(0, len(content), 1000)]
