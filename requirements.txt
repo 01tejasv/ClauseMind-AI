@@ -4,3 +4,6 @@ python-docx
 beautifulsoup4
 chardet
 pandas
+openai
+pinecone-client
+python-dotenv
