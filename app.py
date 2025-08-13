@@ -4,10 +4,10 @@ import docx
 import email
 from bs4 import BeautifulSoup
 import chardet
+import pandas as pd
 from backend import process_and_index
 
 st.set_page_config(page_title="ClauseMind AI 🔍", layout="centered")
-
 st.title("ClauseMind AI 🔍")
 st.markdown("Welcome to **ClauseMind AI** – An LLM-Powered Document Query & Decision Engine.")
 
@@ -18,6 +18,9 @@ uploaded_file = st.file_uploader(
     help="Limit 200MB per file • PDF, DOCX, EML, TXT, CSV"
 )
 
+# -------------------------
+# Parsing functions
+# -------------------------
 def parse_pdf(file):
     doc = fitz.open(stream=file.read(), filetype="pdf")
     text = ""
@@ -47,10 +50,12 @@ def parse_txt(file):
     return raw.decode(encoding, errors="ignore")
 
 def parse_csv(file):
-    import pandas as pd
     df = pd.read_csv(file)
     return df.to_string(index=False)
 
+# -------------------------
+# Main app logic
+# -------------------------
 if uploaded_file:
     st.success("File uploaded successfully!")
     st.json({
@@ -60,9 +65,10 @@ if uploaded_file:
     })
 
     try:
+        # Detect type
         if uploaded_file.type == "application/pdf":
             content = parse_pdf(uploaded_file)
-        elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        elif uploaded_file.type in ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"]:
             content = parse_docx(uploaded_file)
         elif uploaded_file.type == "message/rfc822":
             content = parse_eml(uploaded_file)
