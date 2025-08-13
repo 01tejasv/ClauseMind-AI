@@ -20,11 +20,11 @@ if index_name not in pc.list_indexes().names():
         name=index_name,
         dimension=1536,
         metric="cosine",
-        spec=ServerlessSpec(cloud="aws", region="us-east-1")  # adjust region if needed
+        spec=ServerlessSpec(cloud="aws", region="us-east-1")
     )
 
 # --- Connect to index ---
-index = pc.index(index_name)
+index = pc.indexes[index_name]  # <-- corrected line
 
 # --- Function to process & index ---
 def process_and_index(content: str, filename: str):
