@@ -5,7 +5,7 @@ for idx in pc.list_indexes():
     print(idx)
 
 try:
-    test_vector = [0.0]*1536
+    test_vector = [0.0]*1536  # dummy embedding
     index.upsert(vectors=[("test-id", test_vector, {"filename": "test.txt", "chunk": "Hello world!"})])
     print("Test vector upsert successful!")
 except Exception as e:
