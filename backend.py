@@ -8,9 +8,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # --- Keys from environment variables ---
-openai.api_key = os.environ.get("OPENAI_API_KEY")
-pinecone_api_key = os.environ.get("PINECONE_API_KEY")
-pinecone_env = os.environ.get("PINECONE_ENV")  # e.g., 'us-east1-gcp'
+# If you prefer, you can also directly set your keys here:
+openai.api_key = "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"
+pinecone_api_key = os.environ.get("PINECONE_API_KEY")  # Optional: set in .env
+pinecone_env = os.environ.get("PINECONE_ENV", "us-east1-gcp")  # default region if not in .env
 
 # --- Initialize Pinecone client ---
 pc = Pinecone(api_key=pinecone_api_key, environment=pinecone_env)
@@ -24,7 +25,7 @@ if index_name not in existing_indexes:
         name=index_name,
         dimension=1536,
         metric="cosine",
-        spec=ServerlessSpec(cloud="aws", region="us-east-1")  # pick your region
+        spec=ServerlessSpec(cloud="aws", region="us-east-1")  # adjust region if needed
     )
 
 # --- Connect to index ---
