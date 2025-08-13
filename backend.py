@@ -2,28 +2,31 @@ import os
 from uuid import uuid4
 import openai
 from pinecone import Pinecone, ServerlessSpec
+from dotenv import load_dotenv
 
-# --- OpenAI key ---
-openai.api_key = "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"
+# Load environment variables from .env if present
+load_dotenv()
 
-# --- Pinecone key & environment ---
-pinecone_api_key = "pcsk_5TezHr_5FS18xfebbQxaGZwSRUELygH9RUq7Hnor9u7FdDDYoq4ztLAS2Fv2LC5W19Z4Me"
-pinecone_env = "aped-4627-b74a"
+# --- Keys from environment variables ---
+openai.api_key = os.environ.get("OPENAI_API_KEY")
+pinecone_api_key = os.environ.get("PINECONE_API_KEY")
+pinecone_env = os.environ.get("PINECONE_ENV")  # e.g., 'aped-4627-b74a'
 
-# --- Initialize Pinecone client ---
+# --- Initialize Pinecone ---
 pc = Pinecone(api_key=pinecone_api_key)
 
-# --- Index setup ---
 index_name = "clause-mind-index"
+
+# --- Create index if missing ---
 if index_name not in pc.list_indexes().names():
     pc.create_index(
         name=index_name,
         dimension=1536,
         metric="cosine",
-        spec=ServerlessSpec(cloud="aws", region="us-east-1")  # adjust region if needed
+        spec=ServerlessSpec(cloud="aws", region=pinecone_env)
     )
 
-# --- Connect to the index ---
+# --- Connect to index ---
 index = pc.index(index_name)
 
 # --- Function to process & index ---
@@ -34,6 +37,8 @@ def process_and_index(content: str, filename: str):
             model="text-embedding-ada-002",
             input=chunk
         )["data"][0]["embedding"]
+
         meta = {"filename": filename, "chunk": chunk}
         index.upsert(vectors=[(str(uuid4()), embedding, meta)])
+
     return {"status": "success", "chunks_indexed": len(chunks)}
