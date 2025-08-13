@@ -1,11 +1,12 @@
 from backend import pc, index
 
 print("Available Pinecone indexes:")
-for idx in pc.list_indexes():
+for idx in pc.list_indexes().names():
     print(idx)
 
+# Test a simple upsert
 try:
-    test_vector = [0.0]*1536  # dummy embedding
+    test_vector = [0.0]*1536
     index.upsert(vectors=[("test-id", test_vector, {"filename": "test.txt", "chunk": "Hello world!"})])
     print("Test vector upsert successful!")
 except Exception as e:
