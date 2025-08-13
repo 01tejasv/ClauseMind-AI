@@ -1,27 +1,26 @@
 import os
+from uuid import uuid4
 import openai
 from pinecone import Pinecone, ServerlessSpec
-from uuid import uuid4
 
 # --- OpenAI key ---
-openai.api_key = "sk-..."
+openai.api_key = "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"
 
 # --- Pinecone key & environment ---
-pinecone_api_key = "pcsk-..."
+pinecone_api_key = "pcsk_5TezHr_5FS18xfebbQxaGZwSRUELygH9RUq7Hnor9u7FdDDYoq4ztLAS2Fv2LC5W19Z4Me"
 pinecone_env = "aped-4627-b74a"
 
 # --- Initialize Pinecone client ---
 pc = Pinecone(api_key=pinecone_api_key)
 
+# --- Index setup ---
 index_name = "clause-mind-index"
-
-# --- Create index if missing ---
 if index_name not in pc.list_indexes().names():
     pc.create_index(
         name=index_name,
         dimension=1536,
         metric="cosine",
-        spec=ServerlessSpec(cloud="aws", region="us-west-2")
+        spec=ServerlessSpec(cloud="aws", region="us-east-1")  # adjust region if needed
     )
 
 # --- Connect to the index ---
