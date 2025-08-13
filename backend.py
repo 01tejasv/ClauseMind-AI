@@ -6,21 +6,25 @@ from uuid import uuid4
 # --- OpenAI key ---
 openai.api_key = "sk-..."
 
-# --- Pinecone client ---
-pc = Pinecone(api_key="pcsk-...", environment="aped-4627-b74a")
+# --- Pinecone key & environment ---
+pinecone_api_key = "pcsk-..."
+pinecone_env = "aped-4627-b74a"
+
+# --- Initialize Pinecone client ---
+pc = Pinecone(api_key=pinecone_api_key)
 
 index_name = "clause-mind-index"
 
 # --- Create index if missing ---
-if index_name not in [idx.name for idx in pc.list_indexes()]:
+if index_name not in pc.list_indexes().names():
     pc.create_index(
         name=index_name,
         dimension=1536,
         metric="cosine",
-        spec=ServerlessSpec(cloud="aws", region="us-west-2")  # adjust region if needed
+        spec=ServerlessSpec(cloud="aws", region="us-west-2")
     )
 
-# --- Connect to index ---
+# --- Connect to the index ---
 index = pc.index(index_name)
 
 # --- Function to process & index ---
