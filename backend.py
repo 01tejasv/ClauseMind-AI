@@ -10,20 +10,21 @@ load_dotenv()
 # --- Keys from environment variables ---
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 pinecone_api_key = os.environ.get("PINECONE_API_KEY")
-pinecone_env = os.environ.get("PINECONE_ENV")  # e.g., 'aped-4627-b74a'
+pinecone_env = os.environ.get("PINECONE_ENV")  # e.g., 'us-east1-gcp'
 
-# --- Initialize Pinecone ---
-pc = Pinecone(api_key=pinecone_api_key)
+# --- Initialize Pinecone client ---
+pc = Pinecone(api_key=pinecone_api_key, environment=pinecone_env)
 
 index_name = "clause-mind-index"
 
 # --- Create index if missing ---
-if index_name not in pc.list_indexes().names():
+existing_indexes = [idx.name() for idx in pc.list_indexes()]
+if index_name not in existing_indexes:
     pc.create_index(
         name=index_name,
         dimension=1536,
         metric="cosine",
-        spec=ServerlessSpec(cloud="aws", region=pinecone_env)
+        spec=ServerlessSpec(cloud="aws", region="us-east-1")  # pick your region
     )
 
 # --- Connect to index ---
