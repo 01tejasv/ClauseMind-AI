@@ -65,6 +65,7 @@ if uploaded_file:
     })
 
     try:
+        # Detect type
         if uploaded_file.type == "application/pdf":
             content = parse_pdf(uploaded_file)
         elif uploaded_file.type in ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"]:
