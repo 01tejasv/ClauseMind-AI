@@ -4,15 +4,14 @@ import pinecone
 from uuid import uuid4
 
 # -------------------------------
-# 1. Set API Keys from environment
+# 1. Set API Keys from environment or hardcode
 # -------------------------------
-# Make sure you have set these in your terminal:
-# OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_ENV
+# Correct usage of os.getenv(): pass the name of the environment variable
 
-openai.api_key = os.getenv("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")
+openai.api_key = os.getenv("OPENAI_API_KEY") or "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"
 
-pinecone_api_key = os.getenv("pcsk_5TezHr_5FS18xfebbQxaGZwSRUELygH9RUq7Hnor9u7FdDDYoq4ztLAS2Fv2LC5W19Z4Me")
-pinecone_env = os.getenv("aped-4627-b74a")
+pinecone_api_key = os.getenv("PINECONE_API_KEY") or "pcsk_5TezHr_5FS18xfebbQxaGZwSRUELygH9RUq7Hnor9u7FdDDYoq4ztLAS2Fv2LC5W19Z4Me"
+pinecone_env = os.getenv("PINECONE_ENV") or "aped-4627-b74a"
 
 # -------------------------------
 # 2. Initialize Pinecone
