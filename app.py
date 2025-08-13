@@ -68,7 +68,7 @@ if uploaded_file:
         # Detect type
         if uploaded_file.type == "application/pdf":
             content = parse_pdf(uploaded_file)
-        elif uploaded_file.type in ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"]:
+        elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
             content = parse_docx(uploaded_file)
         elif uploaded_file.type == "message/rfc822":
             content = parse_eml(uploaded_file)
