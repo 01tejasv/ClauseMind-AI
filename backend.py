@@ -1,4 +1,3 @@
-import os
 import openai
 from pinecone import Pinecone, ServerlessSpec
 from uuid import uuid4
@@ -15,8 +14,8 @@ pc = Pinecone(api_key=pinecone_api_key)
 
 index_name = "clause-mind-index"
 
-# --- Create index if missing (serverless spec) ---
-if index_name not in pc.list_indexes().names():
+# --- Create index if it doesn't exist ---
+if index_name not in [idx.name for idx in pc.list_indexes()]:
     pc.create_index(
         name=index_name,
         dimension=1536,
